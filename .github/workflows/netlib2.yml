@@ -1,0 +1,45 @@
+name: Keep Netlib Alive2 Login
+
+on:
+  workflow_dispatch:
+    inputs:
+      website_url:
+        description: '被检查网站的URL'
+        required: true
+        type: string
+      status_code:
+        description: '从网站获取的状态码'
+        required: true
+        type: string
+      timestamp:
+        description: '检查发生时的时间戳'
+        required: true
+        type: string
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Playwright
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests
+          python -m pip install playwright
+          python -m playwright install chromium
+
+      - name: Run Keep Alive Login
+        env:
+          SITE_ACCOUNTS: ${{ secrets.SITE_ACCOUNTS2 }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python login.py
